@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using System.Net.Http;
+using Microsoft.Extensions.Options;
 
 namespace webapi_DependenInject
 {
@@ -27,13 +29,36 @@ namespace webapi_DependenInject
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
 
             var connection = new NpgsqlConnection("Host=127.0.0.1;Username=postgres;Password=docker;Database=posts_db"); 
 
             services.AddSingleton<NpgsqlConnection>(connection);
             services.AddTransient<IDatabase, Database>();
 
+            services.AddControllers(options =>
+            {
+                options.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
+            });
+            services
+            .AddControllersWithViews()
+            .AddNewtonsoftJson();
+
+        }
+
+        private static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
+        {
+            var builder = new ServiceCollection()
+                .AddLogging()
+                .AddMvc()
+                .AddNewtonsoftJson()
+                .Services.BuildServiceProvider();
+
+            return builder
+                .GetRequiredService<IOptions<MvcOptions>>()
+                .Value
+                .InputFormatters
+                .OfType<NewtonsoftJsonPatchInputFormatter>()
+                .First();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

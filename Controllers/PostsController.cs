@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -32,7 +33,7 @@ namespace webapi_DependenInject.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var result = _database.GetByID(id);
+            var result = _database.readByID(id);
             return Ok(result);
         }
 
@@ -43,8 +44,9 @@ namespace webapi_DependenInject.Controllers
         }
 
         [HttpPatch("{id}")]
-        public IActionResult Patch(Posts posts, int id){
-            return Ok(_database.updatePost(posts, id));
+        public IActionResult Patch(int id, [FromBody]JsonPatchDocument<Posts> data){
+            _database.updatePost(id, data);
+            return Ok();
         }
 
         [HttpDelete("{id}")]
