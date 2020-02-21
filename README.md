@@ -1,5 +1,5 @@
 # dependencyinject_tutor
-ini mah inject anesthesia
+ini mah inject euthanasia
 
 Create class Database using implementaion of npgsql `https://www.nuget.org/packages/Npgsql/` that have ability to create CRUD operation
 
