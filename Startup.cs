@@ -30,7 +30,9 @@ namespace webapi_DependenInject
         public void ConfigureServices(IServiceCollection services)
         {
 
-            var connection = new NpgsqlConnection("Host=127.0.0.1;Username=postgres;Password=docker;Database=posts_db"); 
+            var connection = new NpgsqlConnection(
+                "Host=ec2-34-235-108-68.compute-1.amazonaws.com;Username=jvocuxxhftfncd;Password=b447389c188037e5a777ddc54cf58b3781f29d0a2f39607c0058c73a58476af7;Database=devg0jkq4oc3np;SSL Mode=Require;Trust Server Certificate=true"
+                ); 
 
             services.AddSingleton<NpgsqlConnection>(connection);
             services.AddTransient<IDatabase, Database>();
